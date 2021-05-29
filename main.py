@@ -1,6 +1,7 @@
-from settings import BLACK, FPS, HEIGHT, TITLE, WIDTH
+from settings import *
 import pygame
 import random
+from sprites import *
 
 class Game:
     def __init__(self):
@@ -10,13 +11,23 @@ class Game:
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
         self.running = True
-        pass
 
     def new(self):
         # Empezar el juego
         self.all_sprites = pygame.sprite.Group()
+        self.platforms = pygame.sprite.Group()
+        self.player = Player(self)
+        self.all_sprites.add(self.player)
+
+        p1 = Platform(0, HEIGHT - 40, WIDTH, 40)
+        self.all_sprites.add(p1)
+        self.platforms.add(p1)
+
+        p2 = Platform(WIDTH / 2 - 50, HEIGHT * 3 /4, 100, 20)
+        self.all_sprites.add(p2)
+        self.platforms.add(p2)
+
         self.run()
-        pass
 
     def run(self):
         # Main loop
@@ -26,7 +37,6 @@ class Game:
             self.events()
             self.update()
             self.draw()
-        pass
 
     def events(self):
         # Manejo de eventos
@@ -35,19 +45,25 @@ class Game:
                 if self.playing:
                     self.playing = False
                 self.running = False
-        pass
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.player.jump()
 
     def update(self):
         # Actualizaciones en el loop
         self.all_sprites.update()
-        pass
+
+        hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
+        if hits:
+            self.player.pos.y = hits[0].rect.top
+            self.player.vel.y = 0
 
     def draw(self):
         # Game loop draw
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         pygame.display.flip()
-        pass
 
     def show_start_screen(self):
         pass

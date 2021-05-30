@@ -1,5 +1,6 @@
 import pygame as pg
 from random import choice
+from os import path
 
 WIDTH = 360
 HEIGHT = 600
@@ -22,7 +23,7 @@ HS_FILE = "highscore.txt"
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.12
 PLAYER_GRAVITY = 0.5
-PLAYER_JUMP = 14
+PLAYER_JUMP = 20
 
 # plataformas para empezar
 PLATFORM_LIST = [
@@ -41,3 +42,7 @@ GREEN = (204, 223, 134)
 BLUE = (0, 0, 255)
 YELLOW = (248, 229, 153)
 LIGHTBLUE = (146, 191, 230)
+
+# Directorio de archivos
+MAIN_DIR = path.dirname(__file__)
+SND_DIR = path.join(MAIN_DIR, "sounds")

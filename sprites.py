@@ -4,7 +4,8 @@ vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
-        pg.sprite.Sprite.__init__(self)
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         #self.image = pg.Surface((30, 40))
         #self.image.fill(YELLOW)
@@ -16,8 +17,8 @@ class Player(pg.sprite.Sprite):
         self.image = pg.image.load(BUNNY_NORMAL).convert()
         self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH / 2, HEIGHT / 2)
-        self.pos = vec(WIDTH / 2, HEIGHT / 2)
+        self.rect.center = (40, HEIGHT - 100)
+        self.pos = vec(40, HEIGHT - 100)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
 
@@ -34,8 +35,6 @@ class Player(pg.sprite.Sprite):
 
         self.jumping_frame = pg.image.load(BUNNY_JUMP).convert()
         self.jumping_frame.set_colorkey((0, 0, 0))
-
-        
 
     def update(self):
         self.animate()
@@ -91,15 +90,23 @@ class Player(pg.sprite.Sprite):
             self.image = self.jumping_frame
 
     def jump(self):
-        self.rect.x += 1
+        self.rect.x += 2
         hits = pg.sprite.spritecollide(self, self.game.platforms, False)
-        self.rect.x -= 1
-        if hits:
+        self.rect.x -= 2
+        if hits and not self.jumping:
+            self.game.jump_sound.play()
+            self.jumping = True
             self.vel.y = -PLAYER_JUMP
+
+    def jump_cut(self):
+        if self.jumping:
+            if self.vel.y < -3:
+                self.vel.y = -3
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        pg.sprite.Sprite.__init__(self)
+        self.groups = game.all_sprites, game.platforms
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.images = [pg.image.load(PAD_BIG).convert(), pg.image.load(PAD_MINI).convert()]
         self.image = choice(self.images)

@@ -8,6 +8,7 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
+        pygame.mixer.music.set_volume(0.2)
         self.BGCOLOR = LIGHTBLUE
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
@@ -24,6 +25,9 @@ class Game:
                 self.highscore = int(f.read())
             except: 
                 self.highscore = 0 
+        
+        self.jump_sound = pygame.mixer.Sound(path.join(SND_DIR, "jump.wav"))
+        self.jump_sound.set_volume(0.1)
 
     def new(self):
         # Empezar el juego
@@ -31,23 +35,23 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
         self.player = Player(self)
-        self.all_sprites.add(self.player)
 
         for platform in PLATFORM_LIST:
-            p = Platform(self, *platform)
-            self.all_sprites.add(p)
-            self.platforms.add(p)
+            Platform(self, *platform)
 
+        pygame.mixer.music.load(path.join(SND_DIR, "pixelland.ogg"))    
         self.run()
 
     def run(self):
         # Main loop
+        pygame.mixer.music.play(loops=-1)
         self.playing =  True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pygame.mixer.music.fadeout(500)
 
     def events(self):
         # Manejo de eventos
@@ -60,7 +64,10 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.player.jump()
-
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    self.player.jump_cut()    
+            
     def update(self):
         # Actualizaciones en el loop
         self.all_sprites.update()
@@ -69,8 +76,16 @@ class Game:
         if self.player.vel.y > 0:
             hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
             if hits:
-                self.player.pos.y = hits[0].rect.top + 1
-                self.player.vel.y = 0
+                lowest = hits[0]
+                for hit in hits:
+                    if hit.rect.bottom > lowest.rect.centery:
+                        lowest = hit
+                    if self.player.pos.x < lowest.rect.right + 10 and \
+                        self.player.pos.x > lowest.rect.left - 10:
+                        if self.player.pos.y < lowest.rect.bottom:
+                            self.player.pos.y = hits[0].rect.top + 1
+                            self.player.vel.y = 0
+                            self.player.jumping = False
 
         # cuando el jugador llega a la parte más arriba
         # movemos todos los sprites hacia abajo
@@ -97,9 +112,6 @@ class Game:
                 random.randrange(-75, -30)
             )
 
-            self.platforms.add(p)
-            self.all_sprites.add(p)
-
         # el conejo se cae (rip)
         if self.player.rect.bottom > HEIGHT:
             for sprite in self.all_sprites:
@@ -107,11 +119,7 @@ class Game:
                 if sprite.rect.bottom < 0: 
                     sprite.kill()
         if len(self.platforms) == 0:
-            self.playing = False
-
-
-
-        
+            self.playing = False   
 
     def draw(self):
         # Game loop draw
@@ -124,6 +132,8 @@ class Game:
         pygame.display.flip()
 
     def show_start_screen(self):
+        pygame.mixer.music.load(path.join(SND_DIR, "intro.wav"))
+        pygame.mixer.music.play(loops=-1)
         self.screen.fill(self.BGCOLOR)
         self.draw_text("High Score: " + str(self.highscore), 16, FONT_TEXT, WHITE, WIDTH / 2, 15)
         self.draw_text(TITLE, 48, FONT_TITLES, WHITE, WIDTH / 2, HEIGHT / 4)
@@ -131,8 +141,11 @@ class Game:
         self.draw_text("Presiona una tecla para jugar", 22, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
         pygame.display.flip()
         self.wait_for_key()
+        pygame.mixer.music.fadeout(1000)
 
     def show_gameover_screen(self):
+        pygame.mixer.music.load(path.join(SND_DIR, "intro.wav"))
+        pygame.mixer.music.play(loops=-1)
         if not self.running: 
             return 
         self.screen.fill(self.BGCOLOR)
@@ -150,6 +163,7 @@ class Game:
 
         pygame.display.flip()
         self.wait_for_key()
+        pygame.mixer.music.fadeout(1000)
     
     def wait_for_key(self):
         # método para esperar hasta obtener una tecla de parte del usuario

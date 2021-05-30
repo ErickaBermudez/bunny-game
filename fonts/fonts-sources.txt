@@ -1,0 +1,3 @@
+text: https://fonts.google.com/specimen/Baloo+Tammudu+2?preview.text=bunny%20game&preview.text_type=custom#standard-styles
+
+titles: https://fonts.google.com/specimen/Sigmar+One?preview.text=bunny%20game&preview.text_type=custom

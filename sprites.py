@@ -7,7 +7,7 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.image = pg.Surface((30, 40))
-        self.image.fill(LIGHTBLUE)
+        self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
         self.pos = vec(WIDTH / 2, HEIGHT / 2)
@@ -24,7 +24,7 @@ class Player(pg.sprite.Sprite):
             self.acc.x = PLAYER_ACC
 
         # Friccion
-        self.acc += self.vel * PLAYER_FRICTION
+        self.acc.x += self.vel.x * PLAYER_FRICTION
 
         # Motion
         self.vel += self.acc

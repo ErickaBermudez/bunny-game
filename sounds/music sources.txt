@@ -1,0 +1,9 @@
+bounce: https://freesound.org/people/DominikBraun/sounds/483502/
+jump: https://freesound.org/people/Tissman/sounds/445157/
+boost: https://freesound.org/people/Mrthenoronha/sounds/521268/
+
+Pixelland by Kevin MacLeod
+Link: https://incompetech.filmmusic.io/song/4222-pixelland
+License: https://filmmusic.io/standard-license
+
+intro: https://freesound.org/people/DDmyzik/sounds/555800/

@@ -1,5 +1,4 @@
 import pygame as pg
-from random import choice
 from os import path
 
 WIDTH = 360
@@ -24,6 +23,11 @@ PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.12
 PLAYER_GRAVITY = 0.5
 PLAYER_JUMP = 20
+
+# propiedades del juego
+BOOST_POWER = 60
+POWERUP_SPAWN_RATE = 7
+MOB_SPAWN_RATE = 5000
 
 # plataformas para empezar
 PLATFORM_LIST = [

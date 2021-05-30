@@ -27,6 +27,7 @@ class Game:
                 self.highscore = 0 
         
         self.jump_sound = pygame.mixer.Sound(path.join(SND_DIR, "jump.wav"))
+        self.boost_sound = pygame.mixer.Sound(path.join(SND_DIR, "boost.wav"))
         self.jump_sound.set_volume(0.1)
 
     def new(self):
@@ -34,11 +35,15 @@ class Game:
         self.score = 0
         self.all_sprites = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
+        self.mobs = pygame.sprite.Group()
+
         self.player = Player(self)
 
         for platform in PLATFORM_LIST:
             Platform(self, *platform)
 
+        self.mob_timer = 0
         pygame.mixer.music.load(path.join(SND_DIR, "pixelland.ogg"))    
         self.run()
 
@@ -72,6 +77,17 @@ class Game:
         # Actualizaciones en el loop
         self.all_sprites.update()
 
+        # spawn un enemigo
+        now = pg.time.get_ticks()
+        if now - self.mob_timer > MOB_SPAWN_RATE + random.choice([-1000, -500, 0, 500, 1000]):
+            self.mob_timer = now
+            Mob(self)
+
+        # checamos si el jugador colisiona con un mob
+        mob_hits = pygame.sprite.spritecollide(self.player, self.mobs, False)
+        if mob_hits:
+            self.playing = False
+
         # revisamos si el jugador le pega a una plataforma en su caída
         if self.player.vel.y > 0:
             hits = pygame.sprite.spritecollide(self.player, self.platforms, False)
@@ -101,6 +117,9 @@ class Game:
 
                     # añadimos esa plataforma a nuestro score
                     self.score += 1
+            
+            for mob in self.mobs:
+                mob.rect.y += max(abs(self.player.vel.y), 2)
 
                     
 
@@ -111,6 +130,14 @@ class Game:
                 random.randrange(0, WIDTH - width),
                 random.randrange(-75, -30)
             )
+
+        pow_hits = pygame.sprite.spritecollide(self.player, self.powerups, True)
+        for pow in pow_hits:
+            if pow.type == "boost":
+                self.boost_sound.play()
+                self.boost_sound.set_volume(0.05)
+                self.player.vel.y = -BOOST_POWER
+                self.player.jumping = False
 
         # el conejo se cae (rip)
         if self.player.rect.bottom > HEIGHT:

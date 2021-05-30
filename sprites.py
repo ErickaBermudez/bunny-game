@@ -1,5 +1,6 @@
 import pygame as pg
 from settings import *
+from random import choice, randrange
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
@@ -65,8 +66,6 @@ class Player(pg.sprite.Sprite):
         self.rect.midbottom = self.pos
     
     def animate(self):
-        now = pg.time.get_ticks()
-
         if self.vel.x != 0: 
             self.walking = True
         else:
@@ -88,6 +87,9 @@ class Player(pg.sprite.Sprite):
         if self.vel.y != 0:
             self.current_frame = 4
             self.image = self.jumping_frame
+        
+        self.mask = pg.mask.from_surface(self.image)
+
 
     def jump(self):
         self.rect.x += 2
@@ -113,3 +115,63 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        if randrange(100) < POWERUP_SPAWN_RATE:
+            Powerup(self.game, self)
+
+class Powerup(pg.sprite.Sprite):
+    def __init__(self, game, platform):
+        self.groups = game.all_sprites, game.powerups
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.platform = platform
+        self.type = "boost"
+        self.image = pg.image.load(BUNNY_NORMAL).convert()
+        self.image.set_colorkey((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.platform.rect.centerx
+        self.rect.bottom = self.platform.rect.top - 5
+    
+    def update(self):
+        self.rect.bottom = self.platform.rect.top - 5
+        if not self.game.platforms.has(self.platform):
+            self.kill()
+
+class Mob(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.groups = game.all_sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image_up = pg.image.load(BUNNY_NORMAL).convert()
+        self.image_up.set_colorkey((0, 0, 0))
+        self.image_down = pg.image.load(BUNNY_NORMAL).convert()
+        self.image_down.set_colorkey((0, 0, 0))
+        self.image = self.image_up
+        self.rect = self.image.get_rect()
+        self.rect.centerx = choice([-100, WIDTH + 100])
+
+        self.vx = randrange(1, 4)
+        if self.rect.centerx > WIDTH:
+            self.vx *= 1
+        self.rect.y = randrange(HEIGHT / 2)
+        self.vy = 0
+        self.dy = 0.5
+    
+    def update(self):
+        # movimiento en x
+        self.rect.x += self.vx
+        # movimiento en y
+        self.vy += self.dy
+        if self.vy > 3 or self.vy < -3:
+            self.dy *= -1
+        center = self.rect.center
+        if self.dy < 0:
+            self.image = self.image_up
+        else:
+            self.image = self.image_down
+        self.rect = self.image.get_rect()
+        self.mask = pg.mask.from_surface(self.image)
+        self.rect.center = center
+        self.rect.y += self.vy
+
+        if self.rect.left > WIDTH + 100 or self.rect.right < -100:
+            self.kill()

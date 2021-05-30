@@ -8,6 +8,11 @@ class Player(pg.sprite.Sprite):
         self.game = game
         #self.image = pg.Surface((30, 40))
         #self.image.fill(YELLOW)
+        self.walking = False
+        self.jumping = False
+        self.current_frame = 0 
+        self.last_update = 0
+        self.load_images()
         self.image = pg.image.load(BUNNY_NORMAL).convert()
         self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
@@ -16,7 +21,25 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
 
+    def load_images(self): 
+        # idle
+        self.idle_frame = pg.image.load(BUNNY_NORMAL).convert()
+        self.idle_frame.set_colorkey((0, 0, 0))
+
+        self.walking_frame_left = pg.image.load(BUNNY_LEFT).convert()
+        self.walking_frame_left.set_colorkey((0, 0, 0))
+
+        self.walking_frame_right = pg.transform.flip(self.walking_frame_left, True, False)
+        self.walking_frame_left.set_colorkey((0, 0, 0))
+
+        self.jumping_frame = pg.image.load(BUNNY_JUMP).convert()
+        self.jumping_frame.set_colorkey((0, 0, 0))
+
+        
+
     def update(self):
+        self.animate()
+
         self.acc = vec(0, PLAYER_GRAVITY)
         keys = pg.key.get_pressed()
 
@@ -41,6 +64,31 @@ class Player(pg.sprite.Sprite):
             self.pos.x = WIDTH
 
         self.rect.midbottom = self.pos
+    
+    def animate(self):
+        now = pg.time.get_ticks()
+
+        if self.vel.x != 0: 
+            self.walking = True
+        else:
+            self.walking = False
+
+        if not self.walking: 
+            self.current_frame = 1
+            self.image = self.idle_frame;
+        
+        if self.walking: 
+            if self.vel.x > 0: 
+                self.current_frame = 2
+                self.image = self.walking_frame_right
+            else: 
+                self.current_frame = 3
+                self.image = self.walking_frame_left
+        
+        # for jumping
+        if self.vel.y != 0:
+            self.current_frame = 4
+            self.image = self.jumping_frame
 
     def jump(self):
         self.rect.x += 1
@@ -55,7 +103,6 @@ class Platform(pg.sprite.Sprite):
         self.game = game
         self.images = [pg.image.load(PAD_BIG).convert(), pg.image.load(PAD_MINI).convert()]
         self.image = choice(self.images)
-        self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

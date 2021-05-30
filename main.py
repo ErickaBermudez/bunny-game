@@ -2,6 +2,7 @@ from settings import *
 import pygame
 import random
 from sprites import *
+from os import path
 
 class Game:
     def __init__(self):
@@ -16,7 +17,13 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        pass
+        # cargar highscores 
+        self.dir = path.dirname(__file__)
+        with open(path.join(self.dir, HS_FILE), "r") as f:
+            try: 
+                self.highscore = int(f.read())
+            except: 
+                self.highscore = 0 
 
     def new(self):
         # Empezar el juego
@@ -118,6 +125,7 @@ class Game:
 
     def show_start_screen(self):
         self.screen.fill(self.BGCOLOR)
+        self.draw_text("High Score: " + str(self.highscore), 16, FONT_TEXT, WHITE, WIDTH / 2, 15)
         self.draw_text(TITLE, 48, FONT_TITLES, WHITE, WIDTH / 2, HEIGHT / 4)
         self.draw_text("Usa <- -> para moverte y la barra de espacio para saltar", 14, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT / 2)
         self.draw_text("Presiona una tecla para jugar", 22, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
@@ -131,6 +139,15 @@ class Game:
         self.draw_text("GAME OVER", 48, FONT_TITLES, WHITE, WIDTH/2, HEIGHT/4)
         self.draw_text("Puntuación: " + str(self.score), 30, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT / 2)
         self.draw_text("Presiona una tecla para jugar de nuevo ", 22, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+
+        if self.score > self.highscore: 
+            self.highscore = self.score
+            with open(path.join(self.dir, HS_FILE), "w") as f:
+                f.write(str(self.score))
+            self.draw_text("NUEVO HIGHSCORE!", 20, FONT_TITLES, WHITE, WIDTH/2, HEIGHT / 2 + 40)
+        else: 
+            self.draw_text("Highscore: " + str(self.highscore), 20, FONT_TEXT, WHITE, WIDTH/2, HEIGHT / 2 + 40)
+
         pygame.display.flip()
         self.wait_for_key()
     

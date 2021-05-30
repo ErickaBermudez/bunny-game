@@ -10,8 +10,13 @@ FONT_TEXT = "fonts/text.ttf"
 
 # sprites 
 BUNNY_NORMAL = "imgs/bunny_normal.png"
+BUNNY_LEFT = "imgs/bunny_left.png"
+BUNNY_JUMP = "imgs/bunny_jump_left.png"
 PAD_BIG = "imgs/pad.png"
 PAD_MINI = "imgs/pad-mini.png"
+
+# highscore saver
+HS_FILE = "highscore.txt"
 
 # Jugador
 PLAYER_ACC = 0.5

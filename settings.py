@@ -1,5 +1,5 @@
-import pygame
-import random
+import pygame as pg
+from random import choice
 
 WIDTH = 360
 HEIGHT = 600
@@ -7,6 +7,11 @@ FPS = 60
 TITLE = "Bunny Game"
 FONT_TITLES = "fonts/titles.ttf"
 FONT_TEXT = "fonts/text.ttf"
+
+# sprites 
+BUNNY_NORMAL = "imgs/bunny_normal.png"
+PAD_BIG = "imgs/pad.png"
+PAD_MINI = "imgs/pad-mini.png"
 
 # Jugador
 PLAYER_ACC = 0.5
@@ -16,11 +21,11 @@ PLAYER_JUMP = 14
 
 # plataformas para empezar
 PLATFORM_LIST = [
-    (0, HEIGHT - 40, WIDTH, 40),
-    (WIDTH / 2 - 50, HEIGHT * 3 / 4, 100, 20),
-    (20, HEIGHT - 250, 100, 20),
-    (190, 200, 100, 20),
-    (180, 100, 50, 20)
+    (0, HEIGHT - 40),
+    (WIDTH / 2 - 50, HEIGHT * 3 / 4),
+    (20, HEIGHT - 250),
+    (190, 200),
+    (180, 100)
 ]
 
 # Tema

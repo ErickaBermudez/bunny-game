@@ -6,8 +6,10 @@ class Player(pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
         self.game = game
-        self.image = pg.Surface((30, 40))
-        self.image.fill(YELLOW)
+        #self.image = pg.Surface((30, 40))
+        #self.image.fill(YELLOW)
+        self.image = pg.image.load(BUNNY_NORMAL).convert()
+        self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
         self.pos = vec(WIDTH / 2, HEIGHT / 2)
@@ -48,10 +50,12 @@ class Player(pg.sprite.Sprite):
             self.vel.y = -PLAYER_JUMP
 
 class Platform(pg.sprite.Sprite):
-    def __init__(self, x, y, w, h):
+    def __init__(self, game, x, y):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w, h))
-        self.image.fill(GREEN)
+        self.game = game
+        self.images = [pg.image.load(PAD_BIG).convert(), pg.image.load(PAD_MINI).convert()]
+        self.image = choice(self.images)
+        self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y

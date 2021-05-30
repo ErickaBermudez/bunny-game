@@ -13,6 +13,11 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
+        self.load_data()
+
+    def load_data(self):
+        pass
+
     def new(self):
         # Empezar el juego
         self.score = 0
@@ -22,7 +27,7 @@ class Game:
         self.all_sprites.add(self.player)
 
         for platform in PLATFORM_LIST:
-            p = Platform(*platform)
+            p = Platform(self, *platform)
             self.all_sprites.add(p)
             self.platforms.add(p)
 
@@ -80,11 +85,9 @@ class Game:
         # añadimos continuamente nuevas plataformas
         while len(self.platforms) < 6: 
             width = random.randrange(50, 100)
-            p = Platform(
+            p = Platform(self, 
                 random.randrange(0, WIDTH - width),
-                random.randrange(-75, -30),
-                width,
-                20
+                random.randrange(-75, -30)
             )
 
             self.platforms.add(p)

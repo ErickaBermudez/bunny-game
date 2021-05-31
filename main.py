@@ -30,13 +30,20 @@ class Game:
         self.boost_sound = pygame.mixer.Sound(path.join(SND_DIR, "boost.wav"))
         self.jump_sound.set_volume(0.1)
 
+        # cargar imagenes de nubes 
+        self.cloud_images = []
+        self.cloud_images.append(pg.image.load(CLOUD1).convert())
+        self.cloud_images.append(pg.image.load(CLOUD2).convert())
+        self.cloud_images.append(pg.image.load(CLOUD3).convert())
+
     def new(self):
         # Empezar el juego
         self.score = 0
-        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.LayeredUpdates()
         self.platforms = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.mobs = pygame.sprite.Group()
+        self.clouds = pygame.sprite.Group()
 
         self.player = Player(self)
 
@@ -44,7 +51,12 @@ class Game:
             Platform(self, *platform)
 
         self.mob_timer = 0
-        pygame.mixer.music.load(path.join(SND_DIR, "pixelland.ogg"))    
+        pygame.mixer.music.load(path.join(SND_DIR, "pixelland.ogg")) 
+
+        for i in range(8):
+            c = Cloud(self)
+            c.rect.y += 500 
+
         self.run()
 
     def run(self):
@@ -106,7 +118,13 @@ class Game:
         # cuando el jugador llega a la parte más arriba
         # movemos todos los sprites hacia abajo
         if self.player.rect.top <= HEIGHT / 4: 
-            self.player.pos.y += abs(self.player.vel.y)
+            if random.randrange(100) < 5: 
+                Cloud(self)
+            self.player.pos.y += max(abs(self.player.vel.y), 2)
+            for cloud in self.clouds:
+                cloud_scroll = random.randrange(1, 7)
+                cloud.rect.y += max(abs(self.player.vel.y / cloud_scroll), 2)
+
             for platform in self.platforms: 
                 platform.rect.y += abs(self.player.vel.y)
                 if platform.rect.top >= HEIGHT: 
@@ -164,7 +182,9 @@ class Game:
         self.screen.fill(self.BGCOLOR)
         self.draw_text("High Score: " + str(self.highscore), 16, FONT_TEXT, WHITE, WIDTH / 2, 15)
         self.draw_text(TITLE, 48, FONT_TITLES, WHITE, WIDTH / 2, HEIGHT / 4)
+        self.draw_text("UACH", 48, FONT_TITLES, WHITE, WIDTH / 2, HEIGHT / 4 + 48)
         self.draw_text("Usa <- -> para moverte y la barra de espacio para saltar", 14, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text("Uriel / Abraham / Alex / Ericka", 14, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT / 2 - 30)
         self.draw_text("Presiona una tecla para jugar", 22, FONT_TEXT, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
         pygame.display.flip()
         self.wait_for_key()

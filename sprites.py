@@ -5,6 +5,7 @@ vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
+        self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -107,11 +108,17 @@ class Player(pg.sprite.Sprite):
 
 class Platform(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = PLATFORM_LAYER
         self.groups = game.all_sprites, game.platforms
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.images = [pg.image.load(PAD_BIG).convert(), pg.image.load(PAD_MINI).convert()]
+        pad_mini = pg.image.load(PAD_BIG).convert()
+        pad_mini = pg.transform.scale(pad_mini, (70, 50))
+        pad_big = pg.image.load(PAD_BIG).convert()
+        pad_big = pg.transform.scale(pad_mini, (200, 60))
+        self.images = [pad_big, pad_mini]
         self.image = choice(self.images)
+        self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -120,12 +127,14 @@ class Platform(pg.sprite.Sprite):
 
 class Powerup(pg.sprite.Sprite):
     def __init__(self, game, platform):
+        self._layer = POW_LAYER
         self.groups = game.all_sprites, game.powerups
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.platform = platform
         self.type = "boost"
-        self.image = pg.image.load(BUNNY_NORMAL).convert()
+        self.image = pg.image.load(BOOST).convert()
+        self.image = pg.transform.scale(self.image, (40, 50))
         self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.centerx = self.platform.rect.centerx
@@ -138,13 +147,16 @@ class Powerup(pg.sprite.Sprite):
 
 class Mob(pg.sprite.Sprite):
     def __init__(self, game):
+        self._layer = MOB_LAYER
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image_up = pg.image.load(BUNNY_NORMAL).convert()
-        self.image_up.set_colorkey((0, 0, 0))
-        self.image_down = pg.image.load(BUNNY_NORMAL).convert()
-        self.image_down.set_colorkey((0, 0, 0))
+        self.image_up = pg.image.load(MOB_UP).convert()
+        self.image_up = pg.transform.scale(self.image_up, (70, 70))
+        self.image_up.set_colorkey((255, 255, 255))
+        self.image_down = pg.image.load(MOB_DOWN).convert()
+        self.image_down = pg.transform.scale(self.image_down, (70, 70))
+        self.image_down.set_colorkey((255, 255, 255))
         self.image = self.image_up
         self.rect = self.image.get_rect()
         self.rect.centerx = choice([-100, WIDTH + 100])
@@ -174,4 +186,22 @@ class Mob(pg.sprite.Sprite):
         self.rect.y += self.vy
 
         if self.rect.left > WIDTH + 100 or self.rect.right < -100:
+            self.kill()
+
+class Cloud(pg.sprite.Sprite):
+    def __init__(self, game):
+        self._layer = CLOUD_LAYER
+        self.groups = game.all_sprites, game.clouds
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = choice(self.game.cloud_images)
+        self.image.set_colorkey((0, 0, 0))
+        self.rect = self.image.get_rect()
+        scale = randrange(50, 101) / 100
+        self.image = pg.transform.scale(self.image, (int(self.rect.width * scale), int(self.rect.height * scale)))
+        self.rect.x = randrange(WIDTH + 2 - self.rect.width)
+        self.rect.y = randrange(-500, -50)
+    
+    def update(self):
+        if self.rect.top > HEIGHT * 2:
             self.kill()

@@ -14,7 +14,12 @@ BUNNY_LEFT = "imgs/bunny_left.png"
 BUNNY_JUMP = "imgs/bunny_jump_left.png"
 PAD_BIG = "imgs/pad.png"
 PAD_MINI = "imgs/pad-mini.png"
-
+CLOUD1 = "imgs/cloud1.png"
+CLOUD2 = "imgs/cloud2.png"
+CLOUD3 = "imgs/cloud3.png"
+BOOST = "imgs/boost.png"
+MOB_DOWN = "imgs/mob_down.png"
+MOB_UP = "imgs/mob_up.png"
 # highscore saver
 HS_FILE = "highscore.txt"
 
@@ -25,9 +30,17 @@ PLAYER_GRAVITY = 0.5
 PLAYER_JUMP = 20
 
 # propiedades del juego
-BOOST_POWER = 60
+BOOST_POWER = 30
 POWERUP_SPAWN_RATE = 7
 MOB_SPAWN_RATE = 5000
+
+# capas de los sprites
+PLAYER_LAYER = 2 
+MOB_LAYER = 2
+POW_LAYER = 1 
+PLATFORM_LAYER = 1
+CLOUD_LAYER = 0
+
 
 # plataformas para empezar
 PLATFORM_LIST = [
